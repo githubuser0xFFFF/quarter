@@ -1016,7 +1016,12 @@ void QuarterWidget::setupDefaultCursors()
 
 /*!
   Sets a navigation mode file. Supports the schemes "coin" and "file"
-
+  The following example code shows how to load a navigation mode file from
+  Qt resource system:
+  \code
+   auto Url = QUrl::fromLocalFile(":/myapp/res/examiner.xml");
+   setNavigationModeFile(Url);
+  \endcode
   \param[in] url URL to the resource
 */
 void
