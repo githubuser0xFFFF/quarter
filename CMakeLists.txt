@@ -304,6 +304,21 @@ if(QUARTER_BUILD_AWESOME_DOCUMENTATION)
     set(DOXYGEN_TAGFILES_AWESOME "${Coin_DOC_DIR}/html/Coin.tag=../../${_coin_versioned_dir}/html_awesome")
   endif()
 
+  find_package(Git QUIET)
+  if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
+  # Update submodules as needed
+      option(GIT_SUBMODULE "Check submodules during build" ON)
+      if(GIT_SUBMODULE)
+          message(STATUS "Submodule update")
+          execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
+                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                          RESULT_VARIABLE GIT_SUBMOD_RESULT)
+          if(NOT GIT_SUBMOD_RESULT EQUAL "0")
+              message(FATAL_ERROR "git submodule update --init --recursive failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
+          endif()
+      endif()
+  endif()
+
 # ############################################################################
 # Setup documentation options
 # ############################################################################
@@ -315,10 +330,13 @@ if(QUARTER_BUILD_AWESOME_DOCUMENTATION)
   set(DOXYGEN_EXTRACT_PRIVATE NO)
   set(DOXYGEN_WARN_IF_UNDOCUMENTED YES)
   set(DOXYGEN_EXCLUDE)
+  set(GITHUB_LINK "https://github.com/coin3d/quarter")
 
   set(DOXYFILE_AWESOME "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile_awesome")
+  set(HTML_HEADER_AWESOME "${CMAKE_CURRENT_BINARY_DIR}/header_awesome.html")
   set(DOXYGEN_OUTPUT_AWESOME "${CMAKE_BINARY_DIR}/html_awesome/index.html")
   configure_file("${CMAKE_SOURCE_DIR}/docs/quarter.doxygen.awesome.cmake.in" ${DOXYFILE_AWESOME} @ONLY)
+  configure_file("${CMAKE_SOURCE_DIR}/docs/doxygen-awesome/doxygen-custom/header.html.cmake.in" ${HTML_HEADER_AWESOME} @ONLY)
 
 # ############################################################################
 # Setup documentation targets
